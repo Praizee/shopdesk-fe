@@ -7,7 +7,9 @@ import {
   FaPlus,
   FaTimes,
 } from "react-icons/fa";
-import { AddStock } from "@/services/stock"; // Import the AddStock function
+import { AddStock } from "@/services/stock";
+import { CreateProduct } from "@/services/product";
+import { useOrganization } from "@/app/api/useOrganization";
 
 export const currencies = [
   {
@@ -52,11 +54,11 @@ interface AddStockModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (item: {
-    id: string; // Changed from number to string
+    id: string;
     name: string;
-    buying_price: number; // Changed from price to buying_price
+    buying_price: number;
     quantity: number;
-    currency_code: string; // Added currency_code
+    currency_code: string;
   }) => void;
 }
 
@@ -79,7 +81,11 @@ export default function AddStockModal({
     currencies[0]
   );
 
- 
+  const { organizationId, organizationName, organizationInitials } =
+    useOrganization();
+
+  // console.log("organization ID:", organization)
+
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
 
@@ -120,17 +126,21 @@ export default function AddStockModal({
     setIsLoading(true);
 
     try {
-      // const finalSkuCode = skuCode.trim() || null;
+      const unique_id = skuCode.trim() || null;
+      const productId = await CreateProduct(productName, unique_id).id;
+      console.log("productId:", productId);
 
       const newStock = await AddStock(
+        CreateProduct(productName, unique_id),
+
         productName,
         parseFloat(sellingPrice),
         quantity,
         "79dc8c9167fe48e39ee3088bff7f9d3f", // Hardcoded product_id
         selectedSellingCurrency.code,
-        "160db8736a9d47989381e01a987e4413", // Hardcoded organization_id
+        organizationId,
         new Date().toISOString(),
-        selectedSellingCurrency,
+        selectedSellingCurrency
         // finalSkuCode
       );
 
@@ -140,7 +150,7 @@ export default function AddStockModal({
         name: newStock.name,
         buying_price: newStock.buying_price,
         quantity: newStock.quantity,
-        currency_code: newStock.currency_code
+        currency_code: newStock.currency_code,
       });
 
       // Reset the form fields
@@ -153,7 +163,7 @@ export default function AddStockModal({
       onClose(); // Close the modal
     } catch (error) {
       console.error("Error adding stock:", error);
-      alert("Failed to add stock. Please try again.");
+      // alert("Failed to add stock. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -240,9 +250,9 @@ export default function AddStockModal({
             </div>
             <div className="flex  gap-5 flex-1 max-[640px]:flex-col">
               <div className="flex flex-col gap-[12px] flex-1 relative group">
-              <div className="absolute left-0 bottom-[-30px] bg-[#2A2A2A] text-white text-[12px] py-1 px-3 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                SKU Code is auto-assigned for now.
-              </div>
+                <div className="absolute left-0 bottom-[-30px] bg-[#2A2A2A] text-white text-[12px] py-1 px-3 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                  SKU Code is auto-assigned for now.
+                </div>
                 <label className="font-circular-normal text-[14px] text-[#717171] text-left">
                   SKU Code
                 </label>
@@ -259,7 +269,6 @@ export default function AddStockModal({
                       setSkuCode(value);
                     }
                   }}
-                  disabled
                 />
                 {errors.skuCode && (
                   <p className="text-[#FF1925] text-sm font-circular-normal">

@@ -33,7 +33,13 @@ export async function AddStock(
 ): Promise<Stock> {
   try {
     const token = await getAccessToken();
-    console.log("Token:", token);
+    // console.log("Token:", token);
+
+    // Get organization_id from sessionStorage
+    const organization_id = sessionStorage.getItem("organizationId");
+    if (!organization_id) {
+      throw new Error("Organization ID is missing from sessionStorage");
+    }
 
     const response = await fetch("/api/stocks/create", {
       method: "POST",
@@ -48,7 +54,7 @@ export async function AddStock(
         quantity: quantity,
         currency_code: selectedSellingCurrency.code,
         product_id: "79dc8c9167fe48e39ee3088bff7f9d3f",
-        organization_id: "160db8736a9d47989381e01a987e4413",
+        organization_id: organization_id,
         date_created: new Date().toISOString(),
       }),
     });
@@ -114,7 +120,6 @@ export async function deleteStock(stockId: string): Promise<void> {
     throw error;
   }
 }
-
 
 export async function editStock(
   stockId: string,
