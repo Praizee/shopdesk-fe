@@ -63,14 +63,14 @@ const Header = () => {
         <div className="flex items-center gap-4">
           <button
             type="button"
-            onClick={() => router.push("/sign-in")}
+            onClick={() => router.push("/dashboard")}
             className="btn-primary"
           >
             Sign In
           </button>
           <button
             type="button"
-            onClick={() => router.push("/sign-in")}
+            onClick={() => router.push("/dashboard")}
             className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition hidden"
           >
             Start for free
@@ -79,7 +79,7 @@ const Header = () => {
 
         <div className="hidden  add-this-back-flex items-center gap-2 min-[900px]:hidden">
           <button 
-          onClick={() => router.push("/sign-in")}
+          onClick={() => router.push("/dashboard")}
           className="btn-primary min-[900px]:hidden max-[500]:hidden max-[600px]:text-[14px]">
             Get Started
           </button>

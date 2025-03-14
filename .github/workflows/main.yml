@@ -29,7 +29,8 @@ jobs:
               echo '$SSH_PASSWORD' | sudo -S fuser -k 7777/tcp || echo 'No process found on port 7777' &&
               bun install || { echo 'bun install failed'; exit 1; } &&
               bun run build || { echo 'bun run build failed'; exit 1; } &&
-              pm2 start \"bun run start\" --name \"shopdesk\" --watch || { echo 'pm2 start failed'; exit 1; }
+              pm2 start \"bun run start\" --name \"shopdesk\" --watch || { echo 'pm2 start failed'; exit 1; } &&
+              pm2 save
             else
               git clone $REPO_URL || { echo 'Git clone failed'; exit 1; } &&
               cd $(basename $REPO_URL .git) &&

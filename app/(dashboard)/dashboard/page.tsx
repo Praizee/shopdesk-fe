@@ -36,6 +36,7 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import { getAccessToken } from "@/app/api/token";
+import Sidebar from "@/components/functional/sidebar";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData, TValue> {
@@ -85,17 +86,16 @@ const Page = () => {
   const nameInputRef = useRef<HTMLInputElement>(null);
   const priceInputRef = useRef<HTMLInputElement>(null);
   const quantityInputRef = useRef<HTMLInputElement>(null);
-  const searchedItems = stockItems.filter((item) =>
-    item.name.toLowerCase().includes(searchText.toLowerCase()))
-
-  const filteredItems = stockItems.filter((item) =>
-    item.name.toLowerCase().includes(searchText.toLowerCase())
+  const filteredItems = stockItems.filter((item) =>   
+      item.name.toLowerCase().includes(searchText.toLowerCase()) || (item.sku && item.sku.toLowerCase().includes(searchText.toLowerCase()))         
   );
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   const totalItems = stockItems.length;
   const totalPages = Math.ceil(totalItems / rowsPerPage);
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (currentPage > totalPages && totalPages > 0) {
@@ -125,7 +125,7 @@ const Page = () => {
         console.error("Error fetching stock:", error);
         setIsLoading(false);
       });
-  }, [router]);
+  }, [router, stockItems.length]);
 
   const handleEditClick = (item: StockItem) => {
     setSelectedItem(item); 
@@ -265,7 +265,10 @@ const Page = () => {
           const isTransitioning = isEditingTransition === row.original.id;
 
           return (
-            <div className="inline-block w-full overflow-hidden">
+            <div 
+              className="w-full h-full flex items-center overflow-hidden"
+              onClick={() => !isEditingThisRow && handleInlineEdit(row.original, "name")}
+            >
               {isTransitioning ? (
                 <Loader2 className="w-4 h-4 animate-spin mx-auto" />
               ) : isEditingThisRow ? (
@@ -274,10 +277,10 @@ const Page = () => {
                   value={editedItem?.name || ""}
                   onChange={(e) => handleInputChange("name", e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSaveInline()}
-                  className="w-full min-w-0 border rounded px-2 py-1 text-left box-border"
+                  className="no-spinner w-full h-full min-w-0 border text-left box-border p-2 focus:outline-[#009A49]"
                 />
               ) : (
-                <span className="block text-balance">{row.original.name}</span>
+                <span className="block text-balance p-2">{row.original.name}</span>
               )}
             </div>
           );
@@ -312,7 +315,7 @@ const Page = () => {
 
           return (
             <div
-              className="inline-block w-full max-w-[100px]"
+              className="flex w-full h-full items-center justify-center"
               onClick={() => !isEditingThisRow && handleInlineEdit(row.original, "buying_price")}
             >
               {isTransitioning ? (
@@ -324,7 +327,7 @@ const Page = () => {
                   value={editedItem?.buying_price ?? ""}
                   onChange={(e) => handleInputChange("buying_price", e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSaveInline()}
-                  className="w-full border rounded px-2 py-1 text-center"
+                  className="no-spinner w-full h-full border text-center focus:outline-[#009A49]"
                 />
               ) : (
                 <span className="block w-full overflow-x-clip">{`${row.original.currency_code} ${row.original.buying_price?.toLocaleString()}`}</span>
@@ -343,7 +346,7 @@ const Page = () => {
 
           return (
             <div
-              className="inline-block w-[calc(100%-2rem)] max-w-[60px]"
+              className="flex h-full w-full items-center justify-center"
               onClick={() => !isEditingThisRow && handleInlineEdit(row.original, "quantity")}
             >
               {isTransitioning ? (
@@ -355,7 +358,7 @@ const Page = () => {
                   value={editedItem?.quantity ?? ""}
                   onChange={(e) => handleInputChange("quantity", e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSaveInline()}
-                  className="w-full border rounded px-2 py-1 text-center"
+                  className="no-spinner w-full h-full border px-2 py-1 text-center focus:outline-[#009A49]"
                 />
               ) : (
                 row.original.quantity
@@ -426,6 +429,15 @@ const table = useReactTable({
       </div>
     );
   }
+
+  const handleRowClick = (item: StockItem) => {
+    setSelectedItem(item);
+    setIsSidebarOpen(true);
+  };
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
 
   return (
     <main className="px-6 py-4 w-full max-w-7xl mx-auto flex flex-col main-h-svh ">
@@ -529,151 +541,148 @@ const table = useReactTable({
             </div>
             )}
           </div>
-          <div className="border shadow-md rounded-b-lg rounded-bl-lg relative rounded-tr-lg flex-1 overflow-auto w-full">
-          {(stockItems.length === 0 || (isSearching && searchedItems.length === 0)) ? (
-              <div className="relative">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="h-[50px]">
-                      <TableHead className="text-[#090F1C] font-circular-medium px-4 py-2 w-2/7 min-w-[120px] max-[400px]:w-1/3 max-[400px]:px-1 text-left border-b border-r">
-                        ITEM NAME
-                      </TableHead>
-                      <TableHead className="text-[#090F1C] font-circular-medium px-4 py-2 w-1/7 min-w-[120px] max-[400px]:w-1/3 max-[400px]:px-1 text-center border-b border-r">
-                        SKU CODE
-                      </TableHead>
-                      <TableHead className="text-[#090F1C] font-circular-medium px-4 py-2 w-1/7 min-w-[120px] max-[400px]:w-1/3 max-[400px]:px-1 text-center border-b border-r">
-                        PRICE
-                      </TableHead>
-                      <TableHead className="text-[#090F1C] font-circular-medium px-4 py-2 w-1/7 min-w-[120px] text-center border-b border-r ">
-                        QUANTITY
-                      </TableHead>
-                      <TableHead className="text-[#090F1C] font-circular-medium px-4 py-2 w-1/7 min-w-[120px] text-center border-b ">
-                        ACTION
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                </Table>
-                <div className="w-full overflow-x-auto">                  
-                  <span className="w-full h-px bg-[#DEDEDE] block"></span>
-                  <div className="relative h-[80vh] w-full">
-                    {!(isSearching && searchedItems.length === 0)?(<div className="absolute space-y-4 right-0 left-0 top-28 w-56 mx-auto text-center">
-                      <Image
-                        src="/icons/empty-note-pad.svg"
-                        alt=""
-                        width={56}
-                        height={56}
-                        className="mx-auto"
-                      />
-                      <p className="text-[#888888] text-sm">
-                        You have 0 items in stock
-                      </p>
-                      <button
-                        type="button"
-                        onClick={openModal}
-                        className="btn-outline hover:cursor-pointer"
-                      >
-                        + Add New Stock
-                      </button>
-                      <AddItemModal
-                        isOpen={isOpen}
-                        onClose={closeModal}
-                        onSave={(newItem) => {
-                          setStockItems((prev) => [newItem, ...prev]);
-                          closeModal();
-                        }}
-                      />
-                    </div>):(
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="bg-[#F8FAFB] border border-[#DEDEDE] w-[563px] h-[200px] rounded-lg flex flex-col items-center justify-center gap-3 max-[800px]:w-[343px] max-[800px]:h-[334px]">
-                          <Image
-                            src={box}
-                            alt=""
-                            width={56}
-                            height={56}
-                            className="size-8"
-                          />
-
-                          <p className="text-[#2A2A2A] text-sm">Search Item not found.</p>
+          <div className="flex w-full overflow-hidden mx-auto">
+            <div className={`border shadow-md rounded-b-lg rounded-bl-lg relative rounded-tr-lg flex-1 overflow-auto w-full transition-all duration-300 ease-in-out ${
+              isSidebarOpen ? "w-full max-w-[989px] mr-1" : "w-full"
+            }`}>
+            {(stockItems.length === 0 || (isSearching && filteredItems.length === 0)) ? (
+                <div className="relative">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="h-[50px]">
+                        <TableHead className="text-[#090F1C] font-circular-medium px-4 py-2 w-2/7 min-w-[120px] max-[400px]:w-1/3 max-[400px]:px-1 text-left border-b border-r">
+                          ITEM NAME
+                        </TableHead>
+                        <TableHead className="text-[#090F1C] font-circular-medium px-4 py-2 w-1/7 min-w-[120px] max-[400px]:w-1/3 max-[400px]:px-1 text-center border-b border-r">
+                          SKU CODE
+                        </TableHead>
+                        <TableHead className="text-[#090F1C] font-circular-medium px-4 py-2 w-1/7 min-w-[120px] max-[400px]:w-1/3 max-[400px]:px-1 text-center border-b border-r">
+                          PRICE
+                        </TableHead>
+                        <TableHead className="text-[#090F1C] font-circular-medium px-4 py-2 w-1/7 min-w-[120px] text-center border-b border-r ">
+                          QUANTITY
+                        </TableHead>
+                        <TableHead className="text-[#090F1C] font-circular-medium px-4 py-2 w-1/7 min-w-[120px] text-center border-b ">
+                          ACTION
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                  </Table>
+                  <div className="w-full overflow-x-auto">                  
+                    <span className="w-full h-px bg-[#DEDEDE] block"></span>
+                    <div className="relative h-[80vh] w-full">
+                      {!(isSearching && filteredItems.length === 0)?(<div className="absolute space-y-4 right-0 left-0 top-28 w-56 mx-auto text-center">
+                        <Image
+                          src="/icons/empty-note-pad.svg"
+                          alt=""
+                          width={56}
+                          height={56}
+                          className="mx-auto"
+                        />
+                        <p className="text-[#888888] text-sm">
+                          You have 0 items in stock
+                        </p>
+                        <button
+                          type="button"
+                          onClick={openModal}
+                          className="btn-outline hover:cursor-pointer"
+                        >
+                          + Add New Stock
+                        </button>
+                        <AddItemModal
+                          isOpen={isOpen}
+                          onClose={closeModal}
+                          onSave={(newItem) => {
+                            setStockItems((prev) => [newItem, ...prev]);
+                            closeModal();
+                          }}
+                        />
+                      </div>):(
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="bg-[#F8FAFB] border border-[#DEDEDE] w-[563px] h-[200px] rounded-lg flex flex-col items-center justify-center gap-3 max-[800px]:w-[343px] max-[800px]:h-[334px]">
+                            <Image
+                              src={box}
+                              alt=""
+                              width={56}
+                              height={56}
+                              className="size-8"
+                            />
+                            <p className="text-[#2A2A2A] text-sm">Search Item not found.</p>
+                          </div>
                         </div>
-
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ) : (
+                ) : (
               <>
-              <Table className="border-collapse border-b min-w-[590px] table-fixed">
-              <TableHeader>
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id} className="h-[50px]">
-                    {headerGroup.headers.map((header) => (
-                      <TableHead
-                        key={header.id}
-                        className={`text-[#090F1C] font-circular-medium px-4 py-2 text-center border-b border-r min-w-[100px] ${
-                          header.column.id === "name" ? "text-left w-2/7 max-[750px]:w-1/7" : "w-1/7"
-                        } ${header.column.columnDef.meta?.className || ""}`}
-                      >
-                        {flexRender(header.column.columnDef.header, header.getContext())}
-                      </TableHead>
+                <Table className="border-collapse border-b min-w-[590px] table-fixed">
+                  <TableHeader>
+                    {table.getHeaderGroups().map((headerGroup) => (
+                      <TableRow key={headerGroup.id} className="h-[50px]">
+                        {headerGroup.headers.map((header) => (
+                          <TableHead
+                            key={header.id}
+                            className={`text-[#090F1C] font-circular-medium text-center border-b border-r min-w-[100px] ${
+                              header.column.id === "name" ? "text-left w-2/7 max-[750px]:w-1/7" : "w-1/7"
+                            } ${header.column.columnDef.meta?.className || ""}`}
+                          >
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                          </TableHead>
+                        ))}
+                      </TableRow>
                     ))}
-                  </TableRow>
-                ))}
-              </TableHeader>
-        
-             <TableBody>
-  {Array.from({ length: rowsPerPage }).map((_, index) => {
-    const row = table.getRowModel().rows[index] || null; // Get row or null if not available
+                  </TableHeader>        
+                  <TableBody>
+                    {Array.from({ length: rowsPerPage }).map((_, index) => {
+                      const row = table.getRowModel().rows[index] || null; // Get row or null if not available
+                      return (
+                        <TableRow key={index} className="h-[50px] cursor-pointer" onClick={() => row && handleRowClick(row.original)}>
+                          {row
+                            ? row.getVisibleCells().map((cell) => (
+                                <TableCell
+                                  key={cell.id}
+                                  className={`p-0 py-0 align-middle h-[50px] text-center border-r ${
+                                    cell.column.id === "name" ? "text-left overflow-hidden" : ""
+                                  } ${cell.column.columnDef.meta?.className || ""}`}
+                                >
+                                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                </TableCell>
+                              ))
+                            : columns.map((column) => (
+                                <TableCell key={column.id} className="text-center border-r text-gray-400">
+                                  {""} {/* Placeholder for missing row */}
+                                </TableCell>
+                              ))}
+                        </TableRow>
+                      );
+                    })}
 
-    return (
-      <TableRow key={index} className="h-[50px]">
-        {row
-          ? row.getVisibleCells().map((cell) => (
-              <TableCell
-                key={cell.id}
-                className={`px-4 py-3 text-center border-r ${
-                  cell.column.id === "name" ? "text-left overflow-hidden" : ""
-                } ${cell.column.columnDef.meta?.className || ""}`}
-              >
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </TableCell>
-            ))
-          : columns.map((column) => (
-              <TableCell key={column.id} className="px-4 py-3 text-center border-r text-gray-400">
-                {""} {/* Placeholder for missing row */}
-              </TableCell>
-            ))}
-      </TableRow>
-    );
-  })}
-  
-  {/* Pagination */}
-
-</TableBody>
-            </Table>
-     <Table>
-<TableBody>
-  <TableRow>
-    <TableCell colSpan={columns.length} className="py-4">
-      <PaginationFeature
-        totalItems={isSearching ? filteredItems.length : stockItems.length}
-        currentPage={currentPage}
-        itemsPerPage={rowsPerPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-        onItemsPerPageChange={handleItemsPerPageChange}
-      />
-    </TableCell>
-  </TableRow>
-
-</TableBody>
-      
-      </Table>       
-              
+                  </TableBody>
+                </Table>
+                <Table>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell colSpan={columns.length} className="">
+                        <PaginationFeature
+                          totalItems={isSearching ? filteredItems.length : stockItems.length}
+                          currentPage={currentPage}
+                          itemsPerPage={rowsPerPage}
+                          totalPages={totalPages}
+                          onPageChange={handlePageChange}
+                          onItemsPerPageChange={handleItemsPerPageChange}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>        
+                </Table>                     
               </>
-
             )}                                                                
-          </div>
+            </div>
+              {isSidebarOpen && (
+                <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} selectedItem={selectedItem} onSave={handleSaveEdit} />
+              )}
+            </div>
         </div>
       </div>
 

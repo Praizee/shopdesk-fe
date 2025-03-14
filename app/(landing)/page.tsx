@@ -1,31 +1,30 @@
 "use client";
-import Image from "next/image";
-import { useEffect } from "react";
-import AOS from 'aos';
-import 'aos/dist/aos.css';
-import Desktop2 from "@/public/icons/Desktop 2.png";
-import Check from "@/public/icons/check.png";
-import Play from "@/public/icons/play.png";
-import Desktopsm from "@/public/icons/desktopsm.png";
-import displayScreen from "@/public/home-images/displayscreen.svg";
-import displayScreenSm from "@/public/home-images/displayScreenSm.png";
-import displayScreen2 from "@/public/home-images/displayscreen2.svg";
-import patreon from "@/public/home-images/patreon.svg";
+import Testimonials from "@/components/functional/testimonials";
 import airbnb from "@/public/home-images/airbnb.svg";
-import fiberplane from "@/public/home-images/fiberplane.svg";
 import coinbase from "@/public/home-images/coinbase.svg";
+import displayScreenSm from "@/public/home-images/displayScreenSm.png";
+import displayScreen from "@/public/home-images/displayscreen.svg";
+import fiberplane from "@/public/home-images/fiberplane.svg";
 import griffin from "@/public/home-images/griffin.svg";
 import helpscout from "@/public/home-images/helpscout.svg";
+import patreon from "@/public/home-images/patreon.svg";
 import plaid from "@/public/home-images/plaid.svg";
-import Testimonials from "@/components/functional/testimonials";
+import Desktop2 from "@/public/icons/Desktop 2.png";
+import Check from "@/public/icons/check.png";
+import Desktopsm from "@/public/icons/desktopsm.png";
+import Play from "@/public/icons/play.png";
 import right from "@/public/icons/right.svg";
+import AOS from "aos";
+import "aos/dist/aos.css";
+import Image from "next/image";
+import { useEffect } from "react";
 
 export default function Home() {
   // Initialize AOS on component mount
   useEffect(() => {
     AOS.init({
       duration: 800,
-      easing: 'ease-out',
+      easing: "ease-out",
       once: false, // Allow animations to replay
       offset: 100,
     });
@@ -99,21 +98,24 @@ export default function Home() {
     return (
       <section>
         <div className=" flex flex-col items-center gap-6 pt-10 max-w-[1000px] mx-auto px-5 min-[600px]:px-10">
-          <h1 
+          <h1
             className="text-[clamp(36px,_6vw,_60px)] max-w-[947px] leading-14 font-circular-bold md:leading-16 text-center"
             data-aos="fade-down"
             data-aos-once="false" // Allow this element to re-animate
           >
-            <span className="text-[#19A45B]">Simplify</span> Inventory Management – No More Spreadsheets
+            <span className="text-[#19A45B]">Simplify</span> Inventory
+            Management – No More Spreadsheets
           </h1>
 
-          <p 
+          <p
             className="text-gray-600 text-base leading-6 md:text-3xl md:leading-9 font-circular-light text-center font-light min-[400px]:px-5"
             data-aos="fade-up"
             data-aos-delay="200"
             data-aos-once="false" // Allow this element to re-animate
           >
-          Managing your stock shouldn't be a hassle. With ShopDesk, you can securely track your inventory effortlessly all in one simple platform.
+            Managing your stock shouldn't be a hassle. With ShopDesk, you can
+            securely track your inventory effortlessly all in one simple
+            platform.
           </p>
         </div>
 
@@ -135,12 +137,20 @@ export default function Home() {
             data-aos-once="false" // Allow this element to re-animate
           />
 
-          <div 
+          <div
             className="bg-[#19A45B] w-full px-[clamp(18px,_3vw,_80px)] p-6 flex items-center gap-[clamp(16px,_3vw,_48px)] justify-center flex-wrap h-[101px]"
             data-aos="fade-up"
             data-aos-once="false" // Allow this element to re-animate
           >
-            {[patreon, airbnb, fiberplane, coinbase, griffin, helpscout, plaid].map((logo, index) => (
+            {[
+              patreon,
+              airbnb,
+              fiberplane,
+              coinbase,
+              griffin,
+              helpscout,
+              plaid,
+            ].map((logo, index) => (
               <Image
                 key={index}
                 src={logo}
@@ -155,7 +165,7 @@ export default function Home() {
         </div>
 
         <div className="mx-auto max-w-[1198px] px-5 min-[600px]:px-10">
-          <h2 
+          <h2
             className="text-center py-4 md:py-3 font-medium leading-6 text-[#009A49]"
             data-aos="fade-up"
             data-aos-once="false" // Allow this element to re-animate
@@ -164,7 +174,7 @@ export default function Home() {
           </h2>
 
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-            <div 
+            <div
               className="flex flex-col gap-8 min-w-[300px]"
               data-aos="fade-right"
               data-aos-once="false" // Allow this element to re-animate
@@ -186,7 +196,7 @@ export default function Home() {
               </div>
 
               <ul className="flex-col gap-6 leading-6 hidden md:flex">
-                <li 
+                <li
                   className="flex items-center gap-2 text-base"
                   data-aos="fade-up"
                   data-aos-delay="100"
@@ -197,7 +207,7 @@ export default function Home() {
                   </span>
                   Real-Time Stock Tracking
                 </li>
-                <li 
+                <li
                   className="flex items-center gap-2 text-base"
                   data-aos="fade-up"
                   data-aos-delay="200"
@@ -208,7 +218,7 @@ export default function Home() {
                   </span>
                   Effortless Organization
                 </li>
-                <li 
+                <li
                   className="flex items-center gap-2 text-base"
                   data-aos="fade-up"
                   data-aos-delay="300"
@@ -222,7 +232,7 @@ export default function Home() {
               </ul>
             </div>
 
-            <div 
+            <div
               className="w-full max-w-[622px] bg-[#FAFAFA] p-2 pt-5 pr-0 hidden md:block"
               data-aos="fade-left"
               data-aos-once="false" // Allow this element to re-animate
@@ -235,7 +245,7 @@ export default function Home() {
             </div>
 
             <div className="w-full max-w-[450px] mt-4 flex flex-col items-center p-1 rounded-3xl md:hidden">
-              <div 
+              <div
                 className="bg-[#FAFAFA] pt-1.5 px-1.5 pb-0 rounded-tl-3xl rounded-tr-3xl w-full"
                 data-aos="fade-up"
                 data-aos-once="false" // Allow this element to re-animate
@@ -248,7 +258,7 @@ export default function Home() {
               </div>
 
               <ul className="flex flex-col gap-6 text-base leading-6 md:hidden pt-8 self-start">
-                <li 
+                <li
                   className="flex items-center gap-2"
                   data-aos="fade-up"
                   data-aos-delay="100"
@@ -259,7 +269,7 @@ export default function Home() {
                   </span>
                   Automated Alerts
                 </li>
-                <li 
+                <li
                   className="flex items-center gap-2"
                   data-aos="fade-up"
                   data-aos-delay="200"
@@ -270,7 +280,7 @@ export default function Home() {
                   </span>
                   Comprehensive Reporting
                 </li>
-                <li 
+                <li
                   className="flex items-center gap-2"
                   data-aos="fade-up"
                   data-aos-delay="300"
@@ -286,22 +296,19 @@ export default function Home() {
           </div>
         </div>
 
-        <div 
+        <div
           className="mx-auto max-w-[1198px] py-10 px-8"
           data-aos="fade-up"
           data-aos-once="false" // Allow this element to re-animate
         >
           <div className="flex items-stretch justify-center gap-4 flex-wrap">
             {features.map((feature, index) => (
-              <FeatureCard 
-                key={index} 
-                {...feature} 
-              />
+              <FeatureCard key={index} {...feature} />
             ))}
           </div>
         </div>
 
-        <div 
+        <div
           data-aos="fade-up"
           data-aos-once="false" // Allow this element to re-animate
         >
